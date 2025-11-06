@@ -1,11 +1,28 @@
-import { Link, useLoaderData, useNavigate } from "react-router";
+import { use, useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router";
 import Swal from "sweetalert2";
+import { AuthContext } from "../../context/AuthContext";
 
 const ModelDetails = () => {
-  const model = useLoaderData();
+  const { id } = useParams();
+  const { user } = use(AuthContext);
+  useEffect(() => {
+    fetch(`https://3dmodelserver.vercel.app/models/${id}`, {
+      headers: {
+        authorization: `Bearer ${user.accessToken}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setModel(data);
+        setLoading(false);
+      });
+  }, [id, user]);
+  // const model = useLoaderData();
   const navigate = useNavigate();
-  console.log(model);
-
+  // console.log(model);
+  const [model, setModel] = useState([]);
+  const [loading, setLoading] = useState(true);
   const handleDelete = () => {
     Swal.fire({
       title: "Are you sure?",
@@ -17,7 +34,9 @@ const ModelDetails = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`http://localhost:3000/models/${model._id}`, { method: "DELETE" })
+        fetch(`https://3dmodelserver.vercel.app/models/${model._id}`, {
+          method: "DELETE",
+        })
           .then((res) => res.json())
           .then((data) => {
             if (data.deletedCount > 0) {
@@ -29,7 +48,12 @@ const ModelDetails = () => {
       }
     });
   };
-
+  if (loading)
+    return (
+      <div className="flex flex-col justify-center items-center">
+        <p>Loading ....</p>
+      </div>
+    );
   return (
     <div className="max-w-5xl mx-auto p-4 md:p-6 lg:p-8">
       <div className="card bg-base-100 shadow-xl border border-gray-200 rounded-2xl overflow-hidden">
@@ -66,6 +90,9 @@ const ModelDetails = () => {
               >
                 Update Model
               </Link>
+              <button className="btn btn-secondary rounded-full">
+                Download
+              </button>
               <button
                 onClick={handleDelete}
                 className="btn btn-outline rounded-full border-gray-300 hover:border-pink-500 hover:text-pink-600"

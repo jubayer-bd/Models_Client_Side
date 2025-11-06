@@ -15,7 +15,7 @@ const UpdateModel = () => {
       thumbnail: e.target.thumbnail.value,
     };
 
-    fetch(`http://localhost:3000/models/${model._id}`, {
+    fetch(`https://3dmodelserver.vercel.app/models/${model._id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -31,8 +31,6 @@ const UpdateModel = () => {
         console.log(err);
       });
   };
-
-  
 
   return (
     <div className="card bg-base-100 w-full max-w-md mx-auto shadow-2xl rounded-2xl">
@@ -103,7 +101,6 @@ const UpdateModel = () => {
 
           {/* Submit Button */}
           <button
-       
             type="submit"
             className="btn w-full text-white mt-6 rounded-full bg-linear-to-r from-pink-500 to-red-600 hover:from-pink-600 hover:to-red-700"
           >

@@ -20,7 +20,7 @@ const AddModal = () => {
       created_by: user.email,
     };
 
-    fetch("http://localhost:3000/models", {
+    fetch("https://3dmodelserver.vercel.app/models", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -30,9 +30,8 @@ const AddModal = () => {
       .then((res) => res.json())
       .then(() => {
         // console.log(data);
-        toast.success("Product Added Successfully")
+        toast.success("Product Added Successfully");
         navigate("/all-models");
-      
       })
       .catch((err) => {
         console.log(err);
