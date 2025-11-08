@@ -9,6 +9,8 @@ import PrivateRoute from "./PrivateRoute";
 import AddModel from "../Pages/AddModel/AddModel";
 import ModelDetails from "../Pages/ModelDetails/ModelDetails";
 import UpdateModel from "../Pages/UpdateModel/UpdateModel";
+import MyModels from "../Pages/MyModels/MyModels";
+import MyDownloadsPage from "../MyDownloadsPage/MyDownloadsPage";
 
 export const router = createBrowserRouter([
   {
@@ -16,17 +18,17 @@ export const router = createBrowserRouter([
     element: <MainLayout />,
     children: [
       {
-        path: "/",
+        index: true,
         element: <Home />,
         loader: () => fetch("https://3dmodelserver.vercel.app/latest-models"),
       },
       {
-        path: "/all-models",
+        path: "all-models",
         element: <AllModels />,
         loader: () => fetch("https://3dmodelserver.vercel.app/models"),
       },
       {
-        path: "/profile",
+        path: "profile",
         element: (
           <PrivateRoute>
             <Profile />
@@ -34,7 +36,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "/add-model",
+        path: "add-model",
         element: (
           <PrivateRoute>
             <AddModel />
@@ -42,16 +44,31 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "/model-details/:id",
+        path: "model-details/:id",
         element: (
           <PrivateRoute>
             <ModelDetails />
           </PrivateRoute>
         ),
       },
-
       {
-        path: "/update-model/:id",
+        path: "my-models",
+        element: (
+          <PrivateRoute>
+            <MyModels />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "my-downloads",
+        element: (
+          <PrivateRoute>
+            <MyDownloadsPage />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "update-model/:id",
         element: (
           <PrivateRoute>
             <UpdateModel />
@@ -61,11 +78,11 @@ export const router = createBrowserRouter([
           fetch(`https://3dmodelserver.vercel.app/models/${params.id}`),
       },
       {
-        path: "/auth/login",
+        path: "auth/login",
         element: <Login />,
       },
       {
-        path: "/auth/register",
+        path: "auth/register",
         element: <Register />,
       },
     ],

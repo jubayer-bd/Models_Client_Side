@@ -2,10 +2,12 @@ import { use, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import Swal from "sweetalert2";
 import { AuthContext } from "../../context/AuthContext";
+import toast from "react-hot-toast";
 
 const ModelDetails = () => {
   const { id } = useParams();
   const { user } = use(AuthContext);
+  const [reFetch, setReFetch] = useState(false);
   useEffect(() => {
     fetch(`https://3dmodelserver.vercel.app/models/${id}`, {
       headers: {
@@ -17,12 +19,13 @@ const ModelDetails = () => {
         setModel(data);
         setLoading(false);
       });
-  }, [id, user]);
+  }, [id, user, reFetch]);
   // const model = useLoaderData();
   const navigate = useNavigate();
   // console.log(model);
   const [model, setModel] = useState([]);
   const [loading, setLoading] = useState(true);
+
   const handleDelete = () => {
     Swal.fire({
       title: "Are you sure?",
@@ -47,6 +50,33 @@ const ModelDetails = () => {
           .catch((err) => console.log(err));
       }
     });
+  };
+
+  //
+
+  const handleDownloads = () => {
+    const finalModel = {
+      name: model.name,
+      downloads: model.downloads,
+      created_by: model.created_by,
+      description: model.description,
+      thumbnail: model.thumbnail,
+      created_at: new Date(),
+      downloaded_by: user.email,
+    };
+    fetch(`https://3dmodelserver.vercel.app/downloads/${model._id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(finalModel),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        toast.success("Successfully Downloaded");
+        setReFetch(!reFetch);
+      })
+      .catch((err) => console.log(err));
   };
   if (loading)
     return (
@@ -73,10 +103,14 @@ const ModelDetails = () => {
             </h1>
 
             {/* Category Badge */}
-            <div className="badge badge-lg badge-outline text-pink-600 border-pink-600 font-medium">
-              {model.category}
+            <div className="flex flex-row gap-5">
+              <div className="badge badge-lg badge-outline text-pink-600 border-pink-600 font-medium">
+                {model.category}
+              </div>
+              <div className="badge badge-lg badge-outline text-pink-600 border-pink-600 font-medium">
+                Downloads: {model.downloads}
+              </div>
             </div>
-
             {/* Description */}
             <p className="text-gray-600 leading-relaxed text-base md:text-lg">
               {model.description}
@@ -90,7 +124,10 @@ const ModelDetails = () => {
               >
                 Update Model
               </Link>
-              <button className="btn btn-secondary rounded-full">
+              <button
+                onClick={handleDownloads}
+                className="btn btn-secondary rounded-full"
+              >
                 Download
               </button>
               <button
